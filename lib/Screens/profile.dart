@@ -18,12 +18,15 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Profile'),
+        centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          spacing: 20,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Center(child: Text("User Details", style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: Colors.blue),)),
             TextField(
               controller: _nameController..text = profileProvider.name,
               decoration: InputDecoration(labelText: 'Name'),
@@ -33,40 +36,48 @@ class ProfileScreen extends StatelessWidget {
               decoration: InputDecoration(labelText: 'Age'),
               keyboardType: TextInputType.number,
             ),
-            DropdownButton<String>(
-              value: profileProvider.gender.isEmpty
-                  ? null
-                  : profileProvider.gender,
-              hint: Text('Select Gender'),
-              items: ['Male', 'Female', 'Other']
-                  .map((gender) => DropdownMenuItem(
-                value: gender,
-                child: Text(gender),
-              ))
-                  .toList(),
-              onChanged: (value) {
-                if (value != null) {
+            Row(
+              spacing: 30,
+              children: [
+                Text("Gender : "),
+                DropdownButton<String>(
+                  value: profileProvider.gender.isEmpty
+                      ? null
+                      : profileProvider.gender,
+                  hint: Text('Select Gender'),
+                  items: ['Male', 'Female', 'Other']
+                      .map((gender) => DropdownMenuItem(
+                    value: gender,
+                    child: Text(gender),
+                  ))
+                      .toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      profileProvider.saveProfile(
+                          userId,
+                          _nameController.text,
+                          int.tryParse(_ageController.text) ?? 0,
+                          value);
+                    }
+                  },
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
                   profileProvider.saveProfile(
-                      userId,
-                      _nameController.text,
-                      int.tryParse(_ageController.text) ?? 0,
-                      value);
-                }
-              },
+                    userId,
+                    _nameController.text,
+                    int.tryParse(_ageController.text) ?? 0,
+                    profileProvider.gender,
+                  );
+                },
+                child: Text('Save Profile'),
+              ),
             ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                profileProvider.saveProfile(
-                  userId,
-                  _nameController.text,
-                  int.tryParse(_ageController.text) ?? 0,
-                  profileProvider.gender,
-                );
-              },
-              child: Text('Save Profile'),
-            ),
-            SizedBox(height: 20),
+            /*SizedBox(height: 20),
             Text(
               'Profile Details:',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
@@ -74,6 +85,8 @@ class ProfileScreen extends StatelessWidget {
             Text('Name: ${profileProvider.name}'),
             Text('Age: ${profileProvider.age}'),
             Text('Gender: ${profileProvider.gender}'),
+
+             */
           ],
         ),
       ),

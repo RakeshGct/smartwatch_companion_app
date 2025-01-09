@@ -11,19 +11,26 @@ class SettingScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("Setting"),
+        centerTitle: true,
       ),
       body: Column(
+        spacing: 30,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            'Bluetooth Status: ${bluetoothProvider.isConnected ? 'Connected' : 'Disconnected'}',
+          SizedBox(height: 50,),
+          Text('Bluetooth Status', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),),
+          Text('${bluetoothProvider.isConnected ? 'Connected' : 'Disconnected'}',
             style: TextStyle(
               color: bluetoothProvider.isConnected
                   ? Colors.green
                   : Colors.red,
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 20),
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
                 onPressed: bluetoothProvider.connect,

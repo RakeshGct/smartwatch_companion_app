@@ -2,25 +2,34 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class DatabaseHelper {
+  // Singleton instance of DatabaseHelper
   static final DatabaseHelper instance = DatabaseHelper._init();
   static Database? _database;
 
+  // Private constructor
   DatabaseHelper._init();
 
+  // Getter for database instance
   Future<Database> get database async {
     if (_database != null) return _database!;
     _database = await _initDB('health_records.db');
     return _database!;
   }
 
+  // Initialize the database
   Future<Database> _initDB(String fileName) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, fileName);
 
-    return await openDatabase(path, version: 1, onCreate: _createDB);
+    return await openDatabase(
+      path,
+      version: 1,
+      onCreate: _createDB,
+    );
   }
 
-  Future _createDB(Database db, int version) async {
+  // Create the records table
+  Future<void> _createDB(Database db, int version) async {
     await db.execute('''
       CREATE TABLE records (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -31,18 +40,36 @@ class DatabaseHelper {
     ''');
   }
 
+  // Add a record to the database
   Future<int> addRecord(Map<String, dynamic> record) async {
-    final db = await instance.database;
-    return await db.insert('records', record);
+    try {
+      final db = await instance.database;
+      return await db.insert('records', record);
+    } catch (e) {
+      print('Error adding record: $e');
+      return -1; // Indicate an error
+    }
   }
 
+  // Fetch all records from the database
   Future<List<Map<String, dynamic>>> fetchRecords() async {
-    final db = await instance.database;
-    return await db.query('records', orderBy: 'date DESC');
+    try {
+      final db = await instance.database;
+      return await db.query(
+        'records',
+        orderBy: 'date DESC', // Sort records by date (newest first)
+      );
+    } catch (e) {
+      print('Error fetching records: $e');
+      return []; // Return an empty list on error
+    }
   }
 
+  // Close the database connection
   Future<void> close() async {
-    final db = await instance.database;
-    db.close();
+    if (_database != null) {
+      await _database!.close();
+      _database = null; // Reset the database instance
+    }
   }
 }
