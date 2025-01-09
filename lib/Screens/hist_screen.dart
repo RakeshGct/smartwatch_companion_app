@@ -10,12 +10,13 @@ class HistoryScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('History'),
+        centerTitle: true,
       ),
       body: FutureBuilder(
         future: historyProvider.loadRecords(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return Center(child: Text("Loading..."));
           }
           if (historyProvider.records.isEmpty) {
             return Center(
@@ -42,7 +43,6 @@ class HistoryScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          // Example to add a record (you can remove this after testing)
           await historyProvider.addRecord(
             DateTime.now().toIso8601String(),
             72, // Example heart rate
